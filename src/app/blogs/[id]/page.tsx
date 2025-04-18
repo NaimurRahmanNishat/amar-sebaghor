@@ -15,10 +15,10 @@ const Singlepage = () => {
   }
 
   return (
-    <main className="pt-12 md:pt-28 flex flex-col md:flex-row gap-4 md:gap-8 px-4">
+    <main className="pt-12 pb-12 md:pb-0 md:pt-28 flex flex-col md:flex-row gap-4 md:gap-8">
       {/* left side content start */}
       <div className="w-full md:w-[75%]">
-        <div className="w-full h-[500px] relative rounded-lg mb-6 overflow-hidden">
+        <div className="w-full h-[300px] md:h-[500px] relative rounded-lg mb-6 overflow-hidden">
           <Image
             src={blog.image}
             alt={blog.title} 
@@ -41,11 +41,11 @@ const Singlepage = () => {
       {/* left side content end */}
 
       {/* right side content start */}
-      <div className="w-full md:w-[25%] h-[600px] bg-gray-100 px-3 py-6">
+      <div className="w-full md:w-[25%] md:h-[685px] bg-gray-100 px-3 py-6">
         <h2 className="font-bold text-lg text-lightGreen">Latest Blogs</h2>
         <ul className="mt-4 space-y-2">
           {blogs.slice(0, 5).map((blog) => (
-            <li key={blog.id} className="flex">
+            <li key={blog.id} className="flex border-b py-2">
               <div className="w-[200px] h-[100px]">
               <Image src={blog.image} alt="icon" width={96} height={64} />
               </div>
