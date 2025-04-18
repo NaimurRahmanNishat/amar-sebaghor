@@ -5,7 +5,7 @@ import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ScrollToTop() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   // Check if window is defined (to avoid SSR issues)
   const isBrowser = typeof window !== "undefined";
@@ -14,7 +14,7 @@ export function ScrollToTop() {
   const checkScrollPosition = () => {
     if (!isBrowser) return;
     
-    const scrollThreshold = 20;
+    const scrollThreshold = 30;
     const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
     
     setIsVisible(currentScrollPos > scrollThreshold);
