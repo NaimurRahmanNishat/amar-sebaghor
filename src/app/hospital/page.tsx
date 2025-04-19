@@ -176,6 +176,9 @@ const Districts = [
 const page = () => {
   const [isOpenDistrict, setIsOpenDistrict] = useState<boolean>(true);
   const [isOpenDevision, setIsOpenDivision] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredHospitals, setFilteredHospitals] = useState<Hospital[]>(HospitalList);
+
   const handleOpenClickDistrict = () => {
     setIsOpenDistrict(!isOpenDistrict);
   };
@@ -184,9 +187,19 @@ const page = () => {
     setIsOpenDivision(!isOpenDevision);
   };
 
+  // Search functionality
+  useEffect(() => {
+    const results = HospitalList.filter(hospital =>
+      hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredHospitals(results);
+    setCurrentPage(1); // Reset to first page when search changes
+  }, [searchTerm]);
+
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = Math.ceil(HospitalList.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredHospitals.length / itemsPerPage);
 
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -197,7 +210,7 @@ const page = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentHospitals = HospitalList.slice(
+  const currentHospitals = filteredHospitals.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -214,7 +227,6 @@ const page = () => {
       stepsRef.current.forEach((step) => {
         if (step) step.style.height = `${stepHeight}px`;
       });
-
       const figure = figureRef.current;
       if (figure) {
         const isMobile = window.innerWidth < 768;
@@ -222,39 +234,30 @@ const page = () => {
           ? window.innerHeight * 3.5
           : window.innerHeight * 1.6;
         const figureMarginTop = (window.innerHeight - figureHeight) / 2;
-
         figure.style.height = `${figureHeight}px`;
         figure.style.top = `${figureMarginTop}px`;
       }
-
       scroller.current.resize();
     };
-
     const handleStepEnter = (response: any) => {
       stepsRef.current.forEach((step, i) => {
         if (step) {
           step.classList.toggle("is-active", i === response.index);
         }
       });
-
       if (figureRef.current) {
         const p = figureRef.current.querySelector("p");
         if (p) p.textContent = String(response.index + 1);
       }
     };
-
     handleResize();
-
     scroller.current
       .setup({
         step: "#scrolly article .step",
-
         debug: false,
       })
       .onStepEnter(handleStepEnter);
-
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -265,7 +268,15 @@ const page = () => {
       <h1 className="font-secondary text-center text-lightGreen md:text-5xl text-2xl font-bold">
         Hospitals List
       </h1>
-      <div>search bar</div>
+      <div className="md:pt-12 pt-4 ">
+        <input
+          type="text"
+          placeholder="Search Hospital"
+          className="w-full md:w-1/2 mx-auto  px-4 py-2 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-lightGreen"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <div className="pt-12 flex flex-col md:flex-row gap-4">
         <div
           id="scrolly"
@@ -318,81 +329,88 @@ const page = () => {
           <div className="md:w-[75%] w-full mx-auto">
             <div
               ref={figureRef}
-              // hight of the figure solutin
               className="sticky w-full top-0"
             >
-              {currentHospitals.map((hospital) => (
-                <div className="pb-12" key={hospital.id}>
-                  <div className="flex flex-col md:flex-row gap-12">
-                    <div className="w-full md:w-1/4">
-                      <Image
-                        src={hospital.image}
-                        alt={hospital.name}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="w-full md:w-3/4">
-                      <h2 className="text-2xl font-semibold">
-                        {hospital.name}
-                      </h2>
-                      <p className="py-2">{hospital.address}</p>
-                      <div className="pt-12">
-                        <button className="px-4 py-2 bg-simpleGreen font-medium hover:bg-darkGreen text-white cursor-pointer">
-                          Details
-                        </button>
+              {currentHospitals.length > 0 ? (
+                currentHospitals.map((hospital) => (
+                  <div className="pb-12" key={hospital.id}>
+                    <div className="flex flex-col md:flex-row gap-12">
+                      <div className="w-full md:w-1/4">
+                        <Image
+                          src={hospital.image}
+                          alt={hospital.name}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="w-full md:w-3/4">
+                        <h2 className="text-2xl font-semibold">
+                          {hospital.name}
+                        </h2>
+                        <p className="py-2">{hospital.address}</p>
+                        <div className="pt-12">
+                          <button className="px-4 py-2 bg-simpleGreen font-medium hover:bg-darkGreen text-white cursor-pointer">
+                            Details
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-xl">No hospitals found matching your search.</p>
                 </div>
-              ))}
+              )}
 
-              {/* Pagination Controls */}
-              <div className="flex justify-center gap-2 mt-4 mb-10">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <button
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                        className={`px-2 py-2 border cursor-pointer rounded ${
-                          currentPage === 1
-                            ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
-                            : "text-black"
-                        }`}
-                      >
-                        <MoveLeft size={16} className="text-red-600" />
-                      </button>
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <PaginationItem key={index}>
+              {/* Pagination Controls - Only show if there are results */}
+              {filteredHospitals.length > 0 && (
+                <div className="flex justify-center gap-2 mt-4 mb-10">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
                         <button
-                          onClick={() => setCurrentPage(index + 1)}
-                          className={`px-3 py-1 border rounded ${
-                            currentPage === index + 1
-                              ? "bg-[#198754] text-white"
-                              : "hover:bg-gray-100"
+                          onClick={handlePrevPage}
+                          disabled={currentPage === 1}
+                          className={`px-2 py-2 border cursor-pointer rounded ${
+                            currentPage === 1
+                              ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
+                              : "text-black"
                           }`}
                         >
-                          {index + 1}
+                          <MoveLeft size={16} className="text-red-600" />
                         </button>
                       </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <button
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                        className={`px-2 py-2 border cursor-pointer rounded ${
-                          currentPage === totalPages
-                            ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
-                            : "text-black"
-                        }`}
-                      >
-                        <MoveRight size={16} className="text-red-600" />
-                      </button>
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+                      {[...Array(totalPages)].map((_, index) => (
+                        <PaginationItem key={index}>
+                          <button
+                            onClick={() => setCurrentPage(index + 1)}
+                            className={`px-3 py-1 border rounded ${
+                              currentPage === index + 1
+                                ? "bg-[#198754] text-white"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                            {index + 1}
+                          </button>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <button
+                          onClick={handleNextPage}
+                          disabled={currentPage === totalPages}
+                          className={`px-2 py-2 border cursor-pointer rounded ${
+                            currentPage === totalPages
+                              ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
+                              : "text-black"
+                          }`}
+                        >
+                          <MoveRight size={16} className="text-red-600" />
+                        </button>
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </div>
           </div>
         </div>
