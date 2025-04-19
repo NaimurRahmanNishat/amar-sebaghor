@@ -202,7 +202,7 @@ const page = () => {
     startIndex + itemsPerPage
   );
 
-  // side scroll 
+  // side scroll
   const scrollyRef = useRef<HTMLDivElement>(null);
   const figureRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement[]>([]);
@@ -217,7 +217,10 @@ const page = () => {
 
       const figure = figureRef.current;
       if (figure) {
-        const figureHeight = window.innerHeight * 1.2;
+        const isMobile = window.innerWidth < 768;
+        const figureHeight = isMobile
+          ? window.innerHeight * 3.5
+          : window.innerHeight * 1.6;
         const figureMarginTop = (window.innerHeight - figureHeight) / 2;
 
         figure.style.height = `${figureHeight}px`;
@@ -263,129 +266,135 @@ const page = () => {
         Hospitals List
       </h1>
       <div>search bar</div>
-      <div  className="pt-12 flex flex-col md:flex-row gap-4">
-        <div id="scrolly"
+      <div className="pt-12 flex flex-col md:flex-row gap-4">
+        <div
+          id="scrolly"
           ref={scrollyRef}
-          className="relative flex flex-col md:flex-row gap-5">
-        {/* left side content */}
-        <div className="md:w-[25%] w-full mx-auto">
-          <div className="bg-gray-100">
-            <div>
-              <div className="pt-4 px-4 grid gap-4 py-4">
-                <div
-                  onClick={handleOpenClickDistrict}
-                  className="flex items-center gap-2 justify-between cursor-pointer"
-                >
-                  <h3 className="font-semibold text-lg">Division wise</h3>
-                  <SlidersVertical size={20} className="cursor-pointer" />
+          className="relative flex flex-col md:flex-row gap-5"
+        >
+          {/* left side content */}
+          <div className="md:w-[25%] w-full mx-auto">
+            <div className="bg-gray-100">
+              <div>
+                <div className="pt-4 px-4 grid gap-4 py-4">
+                  <div
+                    onClick={handleOpenClickDistrict}
+                    className="flex items-center gap-2 justify-between cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-lg">Division wise</h3>
+                    <SlidersVertical size={20} className="cursor-pointer" />
+                  </div>
+                  {isOpenDistrict &&
+                    Divisions.map((division, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input type="checkbox" />
+                        <p>{division}</p>
+                      </div>
+                    ))}
                 </div>
-                {isOpenDistrict &&
-                  Divisions.map((division, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input type="checkbox" />
-                      <p>{division}</p>
-                    </div>
-                  ))}
               </div>
-            </div>
-            <div>
-              <div className="pt-10 px-4 grid gap-4 py-4">
-                <div
-                  onClick={handleOpenClickDevision}
-                  className="flex items-center gap-2 justify-between cursor-pointer"
-                >
-                  <h3 className="font-semibold text-lg">District wise</h3>
-                  <SlidersVertical size={20} className="cursor-pointer" />
+              <div>
+                <div className="pt-10 px-4 grid gap-4 py-4">
+                  <div
+                    onClick={handleOpenClickDevision}
+                    className="flex items-center gap-2 justify-between cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-lg">District wise</h3>
+                    <SlidersVertical size={20} className="cursor-pointer" />
+                  </div>
+                  {isOpenDevision &&
+                    Districts.map((district, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input type="checkbox" />
+                        <p>{district}</p>
+                      </div>
+                    ))}
                 </div>
-                {isOpenDevision &&
-                  Districts.map((district, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input type="checkbox" />
-                      <p>{district}</p>
-                    </div>
-                  ))}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* right side content */}
-        <div className="md:w-[75%] w-full mx-auto">
-          <div ref={figureRef}
-          // hight of the figure solutin
-            className="sticky w-full top-0">
-            {currentHospitals.map((hospital) => (
-              <div className="pb-12" key={hospital.id}>
-                <div className="flex flex-col md:flex-row gap-12">
-                  <div className="w-full md:w-1/4">
-                    <Image
-                      src={hospital.image}
-                      alt={hospital.name}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="w-full md:w-3/4">
-                    <h2 className="text-2xl font-semibold">{hospital.name}</h2>
-                    <p className="py-2">{hospital.address}</p>
-                    <div className="pt-12">
-                      <button className="px-4 py-2 bg-simpleGreen font-medium hover:bg-darkGreen text-white cursor-pointer">
-                        Details
-                      </button>
+          {/* right side content */}
+          <div className="md:w-[75%] w-full mx-auto">
+            <div
+              ref={figureRef}
+              // hight of the figure solutin
+              className="sticky w-full top-0"
+            >
+              {currentHospitals.map((hospital) => (
+                <div className="pb-12" key={hospital.id}>
+                  <div className="flex flex-col md:flex-row gap-12">
+                    <div className="w-full md:w-1/4">
+                      <Image
+                        src={hospital.image}
+                        alt={hospital.name}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="w-full md:w-3/4">
+                      <h2 className="text-2xl font-semibold">
+                        {hospital.name}
+                      </h2>
+                      <p className="py-2">{hospital.address}</p>
+                      <div className="pt-12">
+                        <button className="px-4 py-2 bg-simpleGreen font-medium hover:bg-darkGreen text-white cursor-pointer">
+                          Details
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center gap-2 mt-4 mb-10">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <button
-                      onClick={handlePrevPage}
-                      disabled={currentPage === 1}
-                      className={`px-2 py-2 border cursor-pointer rounded ${
-                        currentPage === 1
-                          ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
-                          : "text-black"
-                      }`}
-                    >
-                      <MoveLeft size={16} className="text-red-600" />
-                    </button>
-                  </PaginationItem>
-                  {[...Array(totalPages)].map((_, index) => (
-                    <PaginationItem key={index}>
+              {/* Pagination Controls */}
+              <div className="flex justify-center gap-2 mt-4 mb-10">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
                       <button
-                        onClick={() => setCurrentPage(index + 1)}
-                        className={`px-3 py-1 border rounded ${
-                          currentPage === index + 1
-                            ? "bg-[#198754] text-white"
-                            : "hover:bg-gray-100"
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        className={`px-2 py-2 border cursor-pointer rounded ${
+                          currentPage === 1
+                            ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
+                            : "text-black"
                         }`}
                       >
-                        {index + 1}
+                        <MoveLeft size={16} className="text-red-600" />
                       </button>
                     </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <button
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
-                      className={`px-2 py-2 border cursor-pointer rounded ${
-                        currentPage === totalPages
-                          ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
-                          : "text-black"
-                      }`}
-                    >
-                      <MoveRight size={16} className="text-red-600" />
-                    </button>
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                    {[...Array(totalPages)].map((_, index) => (
+                      <PaginationItem key={index}>
+                        <button
+                          onClick={() => setCurrentPage(index + 1)}
+                          className={`px-3 py-1 border rounded ${
+                            currentPage === index + 1
+                              ? "bg-[#198754] text-white"
+                              : "hover:bg-gray-100"
+                          }`}
+                        >
+                          {index + 1}
+                        </button>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`px-2 py-2 border cursor-pointer rounded ${
+                          currentPage === totalPages
+                            ? "text-gray-400 disabled:opacity-30 cursor-not-allowed"
+                            : "text-black"
+                        }`}
+                      >
+                        <MoveRight size={16} className="text-red-600" />
+                      </button>
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -393,7 +402,3 @@ const page = () => {
 };
 
 export default page;
-
-
-
-
