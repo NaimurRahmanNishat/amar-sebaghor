@@ -3,6 +3,7 @@ import Slider from '@/components/shared/Slider';
 import AboutSection from './about/AboutSection';
 import Features from '@/components/shared/Features';
 import Testimonial from '@/components/shared/Testimonial';
+import Review from '@/components/shared/Review';
 
 const page = () => {
   return (
@@ -21,6 +22,9 @@ const page = () => {
       </div>
       <div>
         <Testimonial/>
+      </div>
+      <div>
+        <Review/>
       </div>
     </main>
   )
