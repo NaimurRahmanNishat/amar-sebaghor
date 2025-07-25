@@ -253,7 +253,7 @@ const page = () => {
     handleResize();
     scroller.current
       .setup({
-        step: "#scrolly article .step",
+        step: "#scrolly .step",
         debug: false,
       })
       .onStepEnter(handleStepEnter);
@@ -333,7 +333,7 @@ const page = () => {
             >
               {currentHospitals.length > 0 ? (
                 currentHospitals.map((hospital) => (
-                  <div className="pb-12" key={hospital.id}>
+                  <div className="pb-12 step" key={hospital.id}>
                     <div className="flex flex-col md:flex-row gap-12">
                       <div className="w-full md:w-1/4">
                         <Image
